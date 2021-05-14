@@ -15,17 +15,21 @@ toDigitsRev = reverse . toDigits
 
 -- exercise 2
 doubleEveryOther :: [Integer] -> [Integer]
-doubleEveryOther [] = []
-doubleEveryOther (x:y:t) = [x * 2, y] ++ doubleEveryOther t
-doubleEveryOther (x:t) = [x * 2]
+
+-- first zip xs with indexes from the *right*. Then use the index to determine if double
+doubleEveryOther xs =
+  foldr (\(i, e) acc -> if odd i then 2*e:acc else e:acc) [] $ zip (reverse [0..(length xs)-1]) xs
 
 -- exercise 3
 sumDigits :: [Integer] -> Integer
-sumDigits [] = 0
-sumDigits (x:t) = x + sumDigits t
+
+-- use break each number into list of digits them sum those then sum those
+sumDigits xs = foldr (\x s -> (+) s $ sum $ toDigits x) 0 xs
 
 -- exercise 4
 validate :: Integer -> Bool
+
+-- lmao
 validate = ( == ) 0 . flip mod 10 . sumDigits . doubleEveryOther . toDigits
 
 -- exercise 5 hanoi
@@ -35,4 +39,3 @@ hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
 hanoi n a b c
   | n == 1 = [(a, b)]
   | otherwise = hanoi (n - 1) a c b ++ hanoi 1 a b c ++ hanoi (n - 1) c b a
-
