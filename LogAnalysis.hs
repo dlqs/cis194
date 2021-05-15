@@ -57,9 +57,7 @@ whatWentWrong :: [LogMessage] -> [String]
 whatWentWrong lms =
   map messageString $ filter errorSeverityAtLeast50 $ inOrder $ build lms
   where
-    errorSeverityAtLeast50 (LogMessage (Error e) _ _)
-      | e >= 50 = True
-      | otherwise = False
+    errorSeverityAtLeast50 (LogMessage (Error e) _ _) = e >= 50
     errorSeverityAtLeast50 _ = False
     messageString (LogMessage _ _ s) = s
     messageString _ = ""
