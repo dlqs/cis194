@@ -4,7 +4,7 @@ import Data.List
 
 skips :: [a] -> [[a]]
 
-skips xs = map (\i -> drop i xs) [0..((length xs) - 1)]
+skips xs = map (\i -> [ e | (e, j) <- zip xs [1..], mod j i == 0]) [1..(length xs)]
 
 localMaxima :: [Integer] -> [Integer]
 
@@ -33,4 +33,4 @@ createMatrix xs =
   transpose [ leftPad m [e | x <- [0..f - 1]] | (e, f) <- xs ]
 
 histogram :: [Integer] -> String
-histogram xs = unlines [ (map (\i -> if i == -1 then ' ' else '*') r) | r <- createMatrix $ freqCount xs ] ++ ['=' | _ <- [0..9]] ++ "\n" ++ [ x | x <- ['0'..'9']] ++ "\n"
+histogram xs = unlines [ [if i == -1 then ' ' else '*' | i <- r ] | r <- createMatrix $ freqCount xs ] ++ ['=' | _ <- [0..9]] ++ "\n" ++ [ x | x <- ['0'..'9']] ++ "\n"
