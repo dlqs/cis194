@@ -8,7 +8,7 @@ skips xs = map (\i -> [ e | (e, j) <- zip xs [1..], mod j i == 0]) [1..(length x
 
 localMaxima :: [Integer] -> [Integer]
 
-localMaxima xs = map fst $ filter (\(y,(x, z)) -> x < y && y > z) $ zip (drop 1 xs ) $ zip (drop 2 xs) (xs)
+localMaxima xs = map (\(y, _, _) -> y) $ filter (\(y, x, z) -> x < y && y > z) $ zip3 (drop 1 xs) (drop 2 xs) (xs)
 
 
 -- left pads a list with -1's
