@@ -4,7 +4,7 @@ import Data.List
 
 skips :: [a] -> [[a]]
 
-skips xs = map (\i -> [ e | (e, j) <- zip xs [1..], mod j i == 0]) [1..(length xs)]
+skips xs = [[ e | (e, j) <- zip xs [1..], mod j i == 0] | (_, i) <- zip xs [1..] ]
 
 localMaxima :: [Integer] -> [Integer]
 
