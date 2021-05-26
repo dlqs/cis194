@@ -82,5 +82,17 @@ instance HasVars VarExprT where
 instance HasVars (M.Map String Integer -> Maybe Integer) where
   var = M.lookup
 
--- instance Expr (M.Map String Integer -> Maybe Integer)
-  -- lit =
+-- page 60 FPIS
+map2 :: Monad m => m a -> m b -> (a -> b -> c) -> m c
+map2 ma mb f =
+  do a <- ma
+     b <- mb
+     return $ f a b
+
+instance Expr (M.Map String Integer -> Maybe Integer) where
+ lit x = (\_ -> Just x)
+ add f g = \m -> map2 (f m) (g m) (+)
+ mul f g = \m -> map2 (f m) (g m) (*)
+
+withVars :: [(String, Integer)]-> (M.Map String Integer -> Maybe Integer)-> Maybe Integer
+withVars vs exp = exp $ M.fromList vs
