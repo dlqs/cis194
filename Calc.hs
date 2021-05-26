@@ -1,7 +1,12 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Calc where
 
 import ExprT
 import Parser
+import qualified StackVM
+import qualified Data.Map as M
 
 eval :: ExprT -> Integer
 
@@ -44,3 +49,38 @@ instance Expr Mod7 where
 -- testExp :: Expr a => Maybe a
 -- testExp = parseExp lit add mul "(3 * -4) + 5"
 -- testInteger = testExp :: Maybe Integer
+
+instance Expr StackVM.Program where
+  lit x = [StackVM.PushI x]
+  add p1 p2 = p1 ++ p2 ++ [StackVM.Add]
+  mul p1 p2 = p1 ++ p2 ++ [StackVM.Mul]
+
+compile :: String -> Maybe StackVM.Program
+compile s = (parseExp lit add mul s) :: Maybe StackVM.Program
+
+eitherToMaybe :: Either a b -> Maybe b
+eitherToMaybe (Left x) = Nothing
+eitherToMaybe (Right x) = Just x
+
+class HasVars a where
+  var :: String -> a
+
+data VarExprT = VLit Integer
+              | VAdd VarExprT VarExprT
+              | VMul VarExprT VarExprT
+              | Var String
+              deriving (Show)
+
+instance Expr VarExprT where
+  lit = VLit
+  add = VAdd
+  mul = VMul
+
+instance HasVars VarExprT where
+  var = Var
+
+instance HasVars (M.Map String Integer -> Maybe Integer) where
+  var = M.lookup
+
+-- instance Expr (M.Map String Integer -> Maybe Integer)
+  -- lit =
