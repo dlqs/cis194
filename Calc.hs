@@ -23,9 +23,9 @@ class Expr a where
   mul :: a -> a -> a
 
 instance Expr Integer where
-  lit x = x
-  add e1 e2 = e1 + e2
-  mul e1 e2 = e1 * e2
+  lit = id
+  add = (+)
+  mul = (*)
 
 instance Expr Bool where
   lit x = x > 0
@@ -90,9 +90,9 @@ map2 ma mb f =
      return $ f a b
 
 instance Expr (M.Map String Integer -> Maybe Integer) where
- lit x = (\_ -> Just x)
- add f g = \m -> map2 (f m) (g m) (+)
- mul f g = \m -> map2 (f m) (g m) (*)
+ lit x _ = Just x
+ add f g m = map2 (f m) (g m) (+)
+ mul f g m = map2 (f m) (g m) (*)
 
 withVars :: [(String, Integer)]-> (M.Map String Integer -> Maybe Integer)-> Maybe Integer
 withVars vs exp = exp $ M.fromList vs
