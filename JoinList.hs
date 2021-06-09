@@ -1,7 +1,9 @@
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 module JoinList where
 
 import Sized
 import Scrabble
+import Buffer
 
 data JoinList m a = Empty
                   | Single m a
@@ -55,3 +57,13 @@ takeJ i (Append m l1 l2)
 
 scoreLine :: String -> JoinList Score String
 scoreLine s = Single (scoreString s) s
+
+instance Buffer (JoinList(Score, Size) String) where
+  toString     = unwords . jlToList
+  fromString   s = Single (scoreString s, size s) s
+  line n b     = safeIndex n (lines b)
+  replaceLine n l b = unlines . uncurry replaceLine' . splitAt n . lines $ b
+      where replaceLine' pre [] = pre
+            replaceLine' pre (_:ls) = pre ++ l:ls
+  numLines     = length . lines
+  value        = length . words
