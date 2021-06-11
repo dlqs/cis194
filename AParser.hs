@@ -80,6 +80,7 @@ abParser :: Parser (Char, Char)
 --    f ('a':'b':xs) = Just (('a', 'b'), xs)
 --    f _ = Nothing
 
+-- f(a -> b) f(a) => f(b)
 -- (,) :: a -> b -> (a, b)
 abParser = (,) <$> char 'a' <*> char 'b'
 
@@ -91,7 +92,13 @@ intPair = (\x _ z -> [x, z]) <$> posInt <*> char ' ' <*> posInt
 
 instance Alternative Parser where
   empty = Parser (\_ -> Nothing)
-  p1 <|> p2 = (\x _ -> x) <$> p1 <*> p2
+  -- p1 <|> p2 = (\x _ -> x) <$> p1 <*> p2
+  --Parser f1 <|> Parser f2 = Parser (
+  --  \s -> case f1 s of
+  --    Just (a, s') -> Just (a, s')
+  --    Nothing -> f2 s
+  --                                 )
+  Parser f1 <|> Parser f2 = Parser (\s -> f1 s <|> f2 s)
 
 uppercaseChar :: Parser Char
 uppercaseChar = satisfy (isUpper)
